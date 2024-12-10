@@ -1,0 +1,740 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API UserHUB",
+    "description": "Uma API de Gerenciamento de Usuários projetada para lidar com informações de usuários e departamentos, incluindo criação, recuperação, atualização e exclusão.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Patrick Oliveira",
+      "email": "patrickoliveiramoto@gmail.com",
+      "url": "https://www.linkedin.com/in/patricksoares-dev/"
+    }
+  },
+  "tags": [
+    {
+      "name": "Autenticação",
+      "description": "Operações relacionadas à autenticação"
+    },
+    {
+      "name": "Usuários",
+      "description": "Operações relacionadas a usuários"
+    },
+    {
+      "name": "Departamentos",
+      "description": "Operações relacionadas a departamentos"
+    }    
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "paths": {
+    "/api/auth/login": {
+      "post": {
+        "tags": ["Autenticação"],
+        "summary": "Autenticar usuário",
+        "description": "Autentica o usuário com email e senha, retornando um token JWT.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "Email do usuário"
+                  },
+                  "senha": {
+                    "type": "string",
+                    "description": "Senha do usuário"
+                  }
+                },
+                "required": ["email", "senha"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Autenticação bem-sucedida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "description": "Token JWT para autenticação"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Credenciais inválidas"
+          }
+        }
+      }
+    },
+    "/api/auth/alterar_senha": {
+      "post": {
+        "tags": ["Autenticação"],
+        "summary": "Alterar senha do usuário",
+        "description": "Permite que um usuário autenticado altere sua senha.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nova_senha": {
+                    "type": "string",
+                    "description": "Nova senha do usuário"
+                  }
+                },
+                "required": ["nova_senha"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Senha alterada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "response": {
+                      "type": "string",
+                      "example": "Senha alterada com sucesso"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos"
+          },
+          "403": {
+            "description": "Token não fornecido ou inválido"
+          }
+        }
+      }
+    },
+    "/api/usuarios": {
+      "get": {
+        "tags": ["Usuários"],
+        "summary": "Recuperar todos os usuários",
+        "description": "Busca uma lista de todos os perfis de usuário armazenados no sistema.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Uma lista de perfis de usuário",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer",
+                        "description": "Identificador único para o usuário"
+                      },
+                      "nome": {
+                        "type": "string",
+                        "description": "Nome completo do usuário"
+                      },
+                      "email": {
+                        "type": "string",
+                        "description": "Endereço de email do usuário"
+                      },
+                      "tipo_usuario": {
+                        "type": "string",
+                        "description": "Tipo de usuário; por exemplo, admin, usuário"
+                      },
+                      "departamento": {
+                        "type": "string",
+                        "description": "Departamento ao qual o usuário está associado, se houver",
+                        "nullable": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado - token inválido ou não fornecido"
+          }
+        }
+      }
+    },
+    "/api/usuario/{id}": {
+      "get": {
+        "tags": ["Usuários"],
+        "summary": "Recuperar um usuário pelo ID",
+        "description": "Busca informações detalhadas sobre um usuário específico usando seu ID único.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "O identificador único do usuário"
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Informações do usuário recuperadas com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "description": "Identificador único para o usuário"
+                    },
+                    "nome": {
+                      "type": "string",
+                      "description": "Nome completo do usuário"
+                    },
+                    "email": {
+                      "type": "string",
+                      "description": "Endereço de email do usuário"
+                    },
+                    "tipo_usuario": {
+                      "type": "string",
+                      "description": "Tipo de usuário; por exemplo, admin, usuário"
+                    },
+                    "departamento": {
+                      "type": "string",
+                      "description": "Departamento ao qual o usuário está associado, se houver",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuário não encontrado"
+          },
+          "401": {
+            "description": "Não autorizado - token inválido ou não fornecido"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Usuários"],
+        "summary": "Atualizar um usuário existente",
+        "description": "Modifica informações sobre um usuário existente no sistema.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "O identificador único do usuário"
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome": {
+                    "type": "string",
+                    "description": "Nome completo do usuário"
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "Endereço de email do usuário"
+                  },
+                  "senha": {
+                    "type": "string",
+                    "description": "Senha para a conta do usuário"
+                  },
+                  "tipo_usuario": {
+                    "type": "string",
+                    "description": "Tipo de usuário; por exemplo, admin, usuário"
+                  },
+                  "departamento": {
+                    "type": "string",
+                    "description": "Departamento ao qual o usuário está associado, se houver",
+                    "nullable": true
+                  }
+                }
+              },
+              "example": {
+                "nome": "João Silva",
+                "email": "joao.silva@example.com",
+                "senha": "novaSenhaSegura123",
+                "tipo_usuario": "usuário",
+                "departamento": "Financeiro"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuário atualizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "description": "Identificador único para o usuário"
+                    },
+                    "nome": {
+                      "type": "string",
+                      "description": "Nome completo do usuário"
+                    },
+                    "email": {
+                      "type": "string",
+                      "description": "Endereço de email do usuário"
+                    },
+                    "tipo_usuario": {
+                      "type": "string",
+                      "description": "Tipo de usuário; por exemplo, admin, usuário"
+                    },
+                    "departamento": {
+                      "type": "string",
+                      "description": "Departamento ao qual o usuário está associado, se houver",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados de entrada inválidos"
+          },
+          "404": {
+            "description": "Usuário não encontrado"
+          },
+          "401": {
+            "description": "Não autorizado - token inválido ou não fornecido"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Usuários"],
+        "summary": "Deletar um usuário",
+        "description": "Remove um usuário do sistema usando seu ID único.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "O identificador único do usuário"
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Usuário deletado com sucesso"
+          },
+          "404": {
+            "description": "Usuário não encontrado"
+          },
+          "401": {
+            "description": "Não autorizado - token inválido ou não fornecido"
+          }
+        }
+      }
+    },
+    "/api/usuario": {
+      "post": {
+        "tags": ["Usuários"],
+        "summary": "Criar um novo usuário",
+        "description": "Adiciona um novo usuário ao sistema com os detalhes fornecidos.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome": {
+                    "type": "string",
+                    "description": "Nome completo do usuário"
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "Endereço de email do usuário"
+                  },
+                  "senha": {
+                    "type": "string",
+                    "description": "Senha para a conta do usuário"
+                  },
+                  "tipo_usuario": {
+                    "type": "string",
+                    "description": "Tipo de usuário; por exemplo, admin, usuário"
+                  },
+                  "departamento": {
+                    "type": "string",
+                    "description": "Departamento ao qual o usuário está associado, se houver",
+                    "nullable": true
+                  }
+                },
+                "required": ["nome", "email", "senha", "tipo_usuario"]
+              },
+              "example": {
+                "nome": "Patrick Oliveira",
+                "email": "patrick.oliveira@example.com",
+                "senha": "senhaSegura123",
+                "tipo_usuario": "admin",
+                "departamento": "TI"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuário criado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "description": "Identificador único para o usuário"
+                    },
+                    "nome": {
+                      "type": "string",
+                      "description": "Nome completo do usuário"
+                    },
+                    "email": {
+                      "type": "string",
+                      "description": "Endereço de email do usuário"
+                    },
+                    "tipo_usuario": {
+                      "type": "string",
+                      "description": "Tipo de usuário; por exemplo, admin, usuário"
+                    },
+                    "departamento": {
+                      "type": "string",
+                      "description": "Departamento ao qual o usuário está associado, se houver",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados de entrada inválidos"
+          },
+          "401": {
+            "description": "Não autorizado - token inválido ou não fornecido"
+          }
+        }
+      }
+    },
+    "/api/departamentos": {
+      "get": {
+        "tags": ["Departamentos"],
+        "summary": "Recuperar todos os departamentos",
+        "description": "Busca uma lista de todos os departamentos armazenados no sistema.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Uma lista de departamentos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer",
+                        "description": "Identificador único para o departamento"
+                      },
+                      "nome": {
+                        "type": "string",
+                        "description": "Nome do departamento"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado - token inválido ou não fornecido"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Departamentos"],
+        "summary": "Criar um novo departamento",
+        "description": "Adiciona um novo departamento ao sistema.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome": {
+                    "type": "string",
+                    "description": "Nome do departamento"
+                  }
+                },
+                "required": ["nome"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Departamento criado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "description": "Identificador único para o departamento"
+                    },
+                    "nome": {
+                      "type": "string",
+                      "description": "Nome do departamento"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados de entrada inválidos"
+          },
+          "401": {
+            "description": "Não autorizado - token inválido ou não fornecido"
+          }
+        }
+      }
+    },
+    "/api/departamentos/{id}": {
+      "get": {
+        "tags": ["Departamentos"],
+        "summary": "Recuperar um departamento pelo ID",
+        "description": "Busca informações detalhadas sobre um departamento específico usando seu ID único.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "O identificador único do departamento"
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Informações do departamento recuperadas com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "description": "Identificador único para o departamento"
+                    },
+                    "nome": {
+                      "type": "string",
+                      "description": "Nome do departamento"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Departamento não encontrado"
+          },
+          "401": {
+            "description": "Não autorizado - token inválido ou não fornecido"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Departamentos"],
+        "summary": "Atualizar um departamento existente",
+        "description": "Modifica informações sobre um departamento existente no sistema.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "O identificador único do departamento"
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome": {
+                    "type": "string",
+                    "description": "Nome do departamento"
+                  }
+                },
+                "required": ["nome"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Departamento atualizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "description": "Identificador único para o departamento"
+                    },
+                    "nome": {
+                      "type": "string",
+                      "description": "Nome do departamento"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados de entrada inválidos"
+          },
+          "404": {
+            "description": "Departamento não encontrado"
+          },
+          "401": {
+            "description": "Não autorizado - token inválido ou não fornecido"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Departamentos"],
+        "summary": "Deletar um departamento",
+        "description": "Remove um departamento do sistema usando seu ID único.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "O identificador único do departamento"
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Departamento deletado com sucesso"
+          },
+          "404": {
+            "description": "Departamento não encontrado"
+          },
+          "401": {
+            "description": "Não autorizado - token inválido ou não fornecido"
+          }
+        }
+      }
+    }
+  }
+}
