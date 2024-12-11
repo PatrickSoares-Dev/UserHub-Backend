@@ -88,59 +88,6 @@
         }
       }
     },
-    "/api/auth/alterar_senha": {
-      "post": {
-        "tags": ["Autenticação"],
-        "summary": "Alterar senha do usuário",
-        "description": "Permite que um usuário autenticado altere sua senha.",
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "nova_senha": {
-                    "type": "string",
-                    "description": "Nova senha do usuário"
-                  }
-                },
-                "required": ["nova_senha"]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Senha alterada com sucesso",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "response": {
-                      "type": "string",
-                      "example": "Senha alterada com sucesso"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Dados inválidos"
-          },
-          "403": {
-            "description": "Token não fornecido ou inválido"
-          }
-        }
-      }
-    },
     "/api/usuarios": {
       "get": {
         "tags": ["Usuários"],
@@ -489,7 +436,7 @@
         }
       }
     },
-    "/api/departamentos": {
+    "/api/departamento": {
       "get": {
         "tags": ["Departamentos"],
         "summary": "Recuperar todos os departamentos",
@@ -584,7 +531,7 @@
         }
       }
     },
-    "/api/departamentos/{id}": {
+    "/api/departamento/{id}": {
       "get": {
         "tags": ["Departamentos"],
         "summary": "Recuperar um departamento pelo ID",

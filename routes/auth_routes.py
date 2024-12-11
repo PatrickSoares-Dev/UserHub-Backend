@@ -20,23 +20,23 @@ def login():
     except ValueError as e:
         return jsonify({"status": "error", "response": str(e)}), 401
 
-@auth_bp.route('/alterar_senha', methods=['POST'])
-def alterar_senha():
-    token = request.headers.get('Authorization')
-    if not token:
-        return jsonify({"status": "error", "response": "Token não fornecido"}), 403
+# @auth_bp.route('/alterar_senha', methods=['POST'])
+# def alterar_senha():
+#     token = request.headers.get('Authorization')
+#     if not token:
+#         return jsonify({"status": "error", "response": "Token não fornecido"}), 403
 
-    try:
-        token_data = AuthService.verificar_token(token.split(" ")[1])
-        usuario_id = token_data['sub']
-        data = request.get_json()
-        if not data or 'nova_senha' not in data:
-            return jsonify({"status": "error", "response": "Dados inválidos"}), 400
+#     try:
+#         token_data = AuthService.verificar_token(token.split(" ")[1])
+#         usuario_id = token_data['sub']
+#         data = request.get_json()
+#         if not data or 'nova_senha' not in data:
+#             return jsonify({"status": "error", "response": "Dados inválidos"}), 400
         
-        usuario = Usuario.query.get(usuario_id)
-        usuario.set_password(data['nova_senha'])
-        db.session.commit()
+#         usuario = Usuario.query.get(usuario_id)
+#         usuario.set_password(data['nova_senha'])
+#         db.session.commit()
 
-        return jsonify({"status": "success", "response": "Senha alterada com sucesso"}), 200
-    except ValueError as e:
-        return jsonify({"status": "error", "response": str(e)}), 403
+#         return jsonify({"status": "success", "response": "Senha alterada com sucesso"}), 200
+#     except ValueError as e:
+#         return jsonify({"status": "error", "response": str(e)}), 403

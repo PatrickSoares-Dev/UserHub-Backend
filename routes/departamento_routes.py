@@ -1,21 +1,21 @@
-from flask import Blueprint, jsonify, request, abort
+from flask import Blueprint, jsonify, request
 from services.departamento_service import DepartamentoService
-from utils.decorators import admin_required 
 
-departamento_bp = Blueprint('departamento', __name__, url_prefix='/api/departamentos')
+departamento_bp = Blueprint('departamento', __name__, url_prefix='/api')
 
-@departamento_bp.route('/', methods=['GET'])
-@admin_required
+@departamento_bp.route('/departamento', methods=['GET'])
 def get_departamentos():
-    departamentos = DepartamentoService.listar_todos()
-    response = {
-        "status": "success",
-        "response": [departamento.as_dict() for departamento in departamentos]
-    }
-    return jsonify(response), 200
+    try:
+        departamentos = DepartamentoService.listar_todos()
+        response = {
+            "status": "success",
+            "response": [departamento.as_dict() for departamento in departamentos]
+        }
+        return jsonify(response), 200
+    except Exception as e:
+        return jsonify({"status": "error", "response": str(e)}), 500
 
-@departamento_bp.route('/<int:id>', methods=['GET'])
-@admin_required
+@departamento_bp.route('/departamento/<int:id>', methods=['GET'])
 def get_departamento(id):
     try:
         departamento = DepartamentoService.buscar_por_id(id)
@@ -26,9 +26,8 @@ def get_departamento(id):
         return jsonify(response), 200
     except:
         return jsonify({"status": "error", "response": "Departamento não encontrado"}), 404
-
-@departamento_bp.route('/', methods=['POST'])
-@admin_required
+    
+@departamento_bp.route('/departamento', methods=['POST'])
 def create_departamento():
     data = request.get_json()
     if not data or 'nome' not in data:
@@ -44,8 +43,8 @@ def create_departamento():
     except ValueError as e:
         return jsonify({"status": "error", "response": str(e)}), 400
 
-@departamento_bp.route('/<int:id>', methods=['PUT'])
-@admin_required
+
+@departamento_bp.route('/departamento/<int:id>', methods=['PUT'])
 def update_departamento(id):
     data = request.get_json()
     if not data or 'nome' not in data:
@@ -61,8 +60,7 @@ def update_departamento(id):
     except:
         return jsonify({"status": "error", "response": "Departamento não encontrado"}), 404
 
-@departamento_bp.route('/<int:id>', methods=['DELETE'])
-@admin_required
+@departamento_bp.route('/departamento/<int:id>', methods=['DELETE'])
 def delete_departamento(id):
     if DepartamentoService.deletar_departamento(id):
         return jsonify({"status": "success", "response": "Departamento deletado com sucesso"}), 204
