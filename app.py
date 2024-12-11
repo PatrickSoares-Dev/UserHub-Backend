@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_migrate import Migrate
 from flask_swagger_ui import get_swaggerui_blueprint
-from flask_cors import CORS  # Importe o Flask-CORS
+from flask_cors import CORS 
 from models import db
 from config import Config
 from routes.user_routes import user_bp

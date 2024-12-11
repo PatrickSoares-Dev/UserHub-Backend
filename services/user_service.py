@@ -1,5 +1,3 @@
-# services/user_service.py
-
 from werkzeug.security import generate_password_hash
 from models import db, Usuario, Departamento
 

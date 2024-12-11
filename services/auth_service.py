@@ -19,7 +19,7 @@ class AuthService:
         payload = {
             'exp': exp,
             'iat': datetime.datetime.utcnow(),
-            'sub': str(usuario.id),  # Converte o ID do usuário para string
+            'sub': str(usuario.id), 
             'nome': usuario.nome,
             'tipo_usuario': usuario.tipo_usuario,
             'email': usuario.email
@@ -37,7 +37,7 @@ class AuthService:
             payload = jwt.decode(token, AuthService.SECRET_KEY, algorithms=['HS256'])
             logging.info("Payload decodificado: %s", payload)
             if isinstance(payload, dict):
-                return payload  # Retorna o payload completo
+                return payload  
             else:
                 raise ValueError("Payload não é um dicionário conforme esperado")
         except jwt.ExpiredSignatureError:
